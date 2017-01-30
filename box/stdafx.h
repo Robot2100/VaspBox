@@ -9,7 +9,10 @@
 
 #include <stdio.h>
 #include <tchar.h>
-
-
+#include <list>
+#include <vector>
+#include <iostream>
+#include <fstream>
+#include <iomanip>
 
 // TODO: Установите здесь ссылки на дополнительные заголовки, требующиеся для программы

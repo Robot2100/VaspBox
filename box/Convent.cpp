@@ -1,16 +1,11 @@
-// box.cpp: определяет точку входа для консольного приложения.
+// Convent.cpp: определяет точку входа для консольного приложения.
 //
 
 #include "stdafx.h"
 #include "Classes.h"
 
-
-int main(int argn, char * argv[])
+int old_main(int argn, char * argv[])
 {
-	flo _ce = 10.0;
-
-	int _type=0, _number=0;
-
 	char buf[MAX_LINE];
 	vector<VecPoints> vp;
 	Param param;
@@ -100,9 +95,9 @@ int main(int argn, char * argv[])
 	file2 << "TITLE\n";
 	file2 << "1.000\n";
 	if (defenedCell) {
-		file2 << _ce * 2 << ".00 0.000 0.000" << '\n';
-		file2 << "0.000 " << _ce * 2 << ".00 0.00" << '\n';
-		file2 << "0.000 0.000 " << _ce * 2 << ".00" << '\n';
+		file2 << mat.U[0] << ' ' << mat.U[3] << ' ' << mat.U[4] << '\n';
+		file2 << "0.000 "  << mat.U[1] << ' ' << mat.U[5] << '\n';
+		file2 << "0.000 0.000 " << mat.U[2] << '\n';
 	}
 	for (int i = 0; i < vp.size(); i++) {
 		if (vp[i].name[0] == '\0') break;
@@ -115,53 +110,17 @@ int main(int argn, char * argv[])
 	}
 	file2 << '\n';
 	file2 << "Cartesian\n";
-	Point shift;
-	int check = 0;
-
-	bool _ip = false;
-	{
-		_ip = false;
-		shift = vp[_type].points[_number]-Point(0.5,0.5,0.5);
-		for (int i = 0; i < vp.size(); i++) {
-			if (vp[i].name[0] == '\0') break;
-			for (int j = 0; j < vp[i].points.size(); j++) {
-				vp[i].points[j] -= shift;
-				if (vp[i].points[j].x > 1.0) { vp[i].points[j].x -= 1; _ip = true; }
-				if (vp[i].points[j].y > 1.0) { vp[i].points[j].y -= 1; _ip = true; }
-				if (vp[i].points[j].z > 1.0) { vp[i].points[j].z -= 1; _ip = true; }
-
-				if (vp[i].points[j].x < 0) { vp[i].points[j].x += 1; _ip = true; }
-				if (vp[i].points[j].y < 0) { vp[i].points[j].y += 1; _ip = true; }
-				if (vp[i].points[j].z < 0) { vp[i].points[j].z += 1; _ip = true; }
-			}
-		}
-	}
-	shift = Point();
-	check = 0;
 	for (int i = 0; i < vp.size(); i++) {
 		if (vp[i].name[0] == '\0') break;
 		for (int j = 0; j < vp[i].points.size(); j++) {
-			vp[i].points[j] = mat.Transform(vp[i].points[j]);
-			shift += vp[i].points[j];
-			check++;
+			Point temp = mat.Transform(vp[i].points[j]);
+			file2 << temp.x << ' '
+				<< temp.y << ' '
+				<< temp.z << '\n';
 		}
 	}
-	shift = shift * (1.0 / check);
-	shift -= Point(_ce, _ce, _ce);
-	file2 << setprecision(6);
-	file2.setf(ios::fixed, ios::floatfield);
-	for (int i = 0; i < vp.size(); i++) {
-		if (vp[i].name[0] == '\0') break;
-		for (int j = 0; j < vp[i].points.size(); j++) {
-			vp[i].points[j] -= shift;
-			file2 << vp[i].points[j].x << ' '
-				<< vp[i].points[j].y << ' '
-				<< vp[i].points[j].z << '\n';
-		}
-	}
+	
 
-
-
-	return 0;
+    return 0;
 }
 
