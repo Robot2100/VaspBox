@@ -7,7 +7,7 @@ int _sign(flo);
 
 const flo RadtoGrad = flo(90 / 1.57079632679489661923);
 const flo GradtoRad = flo(1.57079632679489661923 / 90);
-
+#ifndef POINT_H
 struct Point
 {
 	flo x;
@@ -97,6 +97,7 @@ struct Point
 		return Point(((p1.x)*(p2.x)), ((p1.y)*(p2.y)), ((p1.z)*(p2.z)));
 	}
 };
+#endif
 struct Matrix
 {             // 0  1  2  3  4  5
 	flo U[6]; // x2 y2 z2 xy xz yz

@@ -14,5 +14,6 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include "D:/PRO/Includes/Includes.h"
 
 // TODO: Установите здесь ссылки на дополнительные заголовки, требующиеся для программы

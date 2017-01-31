@@ -8,6 +8,7 @@
 int main(int argn, char * argv[])
 {
 	flo _ce = 10.0;
+	flo bond = 2.5;
 
 	int _type=0, _number=0;
 
@@ -46,6 +47,7 @@ int main(int argn, char * argv[])
 	}
 	else {
 		file.close();
+		exit(-1);
 		file.open(param.filename);
 	}
 
@@ -99,10 +101,12 @@ int main(int argn, char * argv[])
 	ofstream file2("POSCAR");
 	file2 << "TITLE\n";
 	file2 << "1.000\n";
+	file2 << setprecision(6);
+	file2.setf(ios::fixed, ios::floatfield);
 	if (defenedCell) {
-		file2 << _ce * 2 << ".00 0.000 0.000" << '\n';
-		file2 << "0.000 " << _ce * 2 << ".00 0.00" << '\n';
-		file2 << "0.000 0.000 " << _ce * 2 << ".00" << '\n';
+		file2 << _ce * 2 << " 0.00000 0.00000" << '\n';
+		file2 << "0.00000 " << _ce * 2 << " 0.00000" << '\n';
+		file2 << "0.00000 0.00000 " << _ce * 2  << '\n';
 	}
 	for (int i = 0; i < vp.size(); i++) {
 		if (vp[i].name[0] == '\0') break;
@@ -117,7 +121,6 @@ int main(int argn, char * argv[])
 	file2 << "Cartesian\n";
 	Point shift;
 	int check = 0;
-
 	bool _ip = false;
 	{
 		_ip = false;
