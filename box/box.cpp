@@ -3,14 +3,14 @@
 
 #include "stdafx.h"
 #include "Classes.h"
-
+using namespace std;
 
 int main(int argn, char * argv[])
 {
 	flo _ce = 10.0;
-	flo bond = 2.5;
+	flo bond = 2.2;
 
-	int _type=0, _number=0;
+	int _type=1, _number=1;
 
 	char buf[MAX_LINE];
 	vector<VecPoints> vp;
@@ -19,7 +19,7 @@ int main(int argn, char * argv[])
 	ifstream file(param.filename);
 	Matrix mat;
 	bool defenedCell = false;
-	file >> buf;
+	file >> buf; // —читывание €чейки
 	if (strcmp(buf, "CELL") == 0) {
 		Cell cell;
 		file >> buf;
@@ -48,10 +48,9 @@ int main(int argn, char * argv[])
 	else {
 		file.close();
 		exit(-1);
-		file.open(param.filename);
 	}
 
-
+	// ÷икл считывани€ атомов
 	while (!file.eof())
 	{
 		file >> buf;
@@ -73,7 +72,7 @@ int main(int argn, char * argv[])
 			file >> buf;
 
 		Point k;
-
+		// чтение координат атома
 		file >> buf;
 		if (buf[1] == ',') buf[1] = '.';
 		if (buf[2] == ',') buf[2] = '.';
@@ -103,10 +102,35 @@ int main(int argn, char * argv[])
 	file2 << "1.000\n";
 	file2 << setprecision(6);
 	file2.setf(ios::fixed, ios::floatfield);
+
+	Point shift;
+	int check = 0;
+	bool _ip = false;
+	Supercell supCell(mat, vp);
+	supCell.Uniq(_type, _number, bond);
+	vp = supCell.vp;
+	//{
+	//	_ip = false;
+	//	shift = vp[_type].points[_number]-Point(0.5,0.5,0.5);
+	//	for (int i = 0; i < vp.size(); i++) {
+	//		if (vp[i].name[0] == '\0') break;
+	//		for (int j = 0; j < vp[i].points.size(); j++) {
+	//			vp[i].points[j] -= shift;
+	//			if (vp[i].points[j].x > 1.0) { vp[i].points[j].x -= 1; _ip = true; }
+	//			if (vp[i].points[j].y > 1.0) { vp[i].points[j].y -= 1; _ip = true; }
+	//			if (vp[i].points[j].z > 1.0) { vp[i].points[j].z -= 1; _ip = true; }
+	//			if (vp[i].points[j].x < 0) { vp[i].points[j].x += 1; _ip = true; }
+	//			if (vp[i].points[j].y < 0) { vp[i].points[j].y += 1; _ip = true; }
+	//			if (vp[i].points[j].z < 0) { vp[i].points[j].z += 1; _ip = true; }
+	//		}
+	//	}
+	//}
+
+	
 	if (defenedCell) {
 		file2 << _ce * 2 << " 0.00000 0.00000" << '\n';
 		file2 << "0.00000 " << _ce * 2 << " 0.00000" << '\n';
-		file2 << "0.00000 0.00000 " << _ce * 2  << '\n';
+		file2 << "0.00000 0.00000 " << _ce * 2 << '\n';
 	}
 	for (int i = 0; i < vp.size(); i++) {
 		if (vp[i].name[0] == '\0') break;
@@ -119,32 +143,13 @@ int main(int argn, char * argv[])
 	}
 	file2 << '\n';
 	file2 << "Cartesian\n";
-	Point shift;
-	int check = 0;
-	bool _ip = false;
-	{
-		_ip = false;
-		shift = vp[_type].points[_number]-Point(0.5,0.5,0.5);
-		for (int i = 0; i < vp.size(); i++) {
-			if (vp[i].name[0] == '\0') break;
-			for (int j = 0; j < vp[i].points.size(); j++) {
-				vp[i].points[j] -= shift;
-				if (vp[i].points[j].x > 1.0) { vp[i].points[j].x -= 1; _ip = true; }
-				if (vp[i].points[j].y > 1.0) { vp[i].points[j].y -= 1; _ip = true; }
-				if (vp[i].points[j].z > 1.0) { vp[i].points[j].z -= 1; _ip = true; }
 
-				if (vp[i].points[j].x < 0) { vp[i].points[j].x += 1; _ip = true; }
-				if (vp[i].points[j].y < 0) { vp[i].points[j].y += 1; _ip = true; }
-				if (vp[i].points[j].z < 0) { vp[i].points[j].z += 1; _ip = true; }
-			}
-		}
-	}
 	shift = Point();
 	check = 0;
 	for (int i = 0; i < vp.size(); i++) {
 		if (vp[i].name[0] == '\0') break;
 		for (int j = 0; j < vp[i].points.size(); j++) {
-			vp[i].points[j] = mat.Transform(vp[i].points[j]);
+			//vp[i].points[j] = mat.Transform(vp[i].points[j]);
 			shift += vp[i].points[j];
 			check++;
 		}
