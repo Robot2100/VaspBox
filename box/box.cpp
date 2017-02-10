@@ -47,6 +47,7 @@ int main(int argn, char * argv[])
 	}
 	else {
 		file.close();
+		cout << "Error! Can't read CELL line." << endl;
 		exit(-1);
 	}
 
