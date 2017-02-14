@@ -1,12 +1,9 @@
 #pragma once
 #include "stdafx.h"
 using namespace std;
-typedef double flo;
 flo _quad(flo);
 int _sign(flo);
 
-const flo RadtoGrad = flo(90 / 1.57079632679489661923);
-const flo GradtoRad = flo(1.57079632679489661923 / 90);
 #ifndef POINT_H
 struct Point
 {
@@ -98,6 +95,9 @@ struct Point
 	}
 };
 #endif
+#ifndef CELL_MATRIX_H
+const flo RadtoGrad = flo(90 / 1.57079632679489661923);
+const flo GradtoRad = flo(1.57079632679489661923 / 90);
 struct Matrix
 {             // 0  1  2  3  4  5
 	flo U[6]; // x2 y2 z2 xy xz yz
@@ -213,11 +213,13 @@ struct Cell
 		return res;
 	}
 };
+#endif
 typedef Point Line;
 
 const Point OX(1, 0, 0), OY(0, 1, 0), OZ(0, 0, 1);
 
 const int MAX_LINE = 255;
+#ifndef PARAM_H
 class Param
 {
 public:
@@ -230,6 +232,8 @@ public:
 		filename = string(argv[1]);
 	}
 };
+#endif
+
 struct VecPoints
 {
 	VecPoints() {}
@@ -246,15 +250,15 @@ struct Supercell
 	Supercell(Matrix & mat, vector<VecPoints> & vpIN)
 	{
 		vp = vpIN;
-		for (int i = 0; i < vpIN.size(); i++) {
+		for (int i = 0; i < (int)vpIN.size(); i++) {
 			vp[i].points.clear();
 			if (vpIN[i].name[0] == '\0') break;
-			for (int j = 0; j < vpIN[i].points.size(); j++) {
+			for (int j = 0; j < (int)vpIN[i].points.size(); j++) {
 				for (int q = -1; q <= 1; q++) {
 					for (int w = -1; w <= 1; w++) {
 						for (int e = -1; e <= 1; e++) {
 							//if (q == 0 && w == 0 && e == 0) continue;
-							Point temp = vpIN[i].points[j] + Point(q, w, e);
+							Point temp = vpIN[i].points[j] + Point((float)q, (float)w, (float)e);
 							vp[i].points.push_back(mat.Transform(temp));
 						}
 					}
@@ -268,24 +272,12 @@ struct Supercell
 		NCalls = 0;
 	}
 	int NCalls;
-private:
-	void ClearPoint(vector<Point> & a, int b)
-	{
-		NCalls++;
-		vector<Point> temp;
-		a.swap(temp);
-		for (int i = 0; i < temp.size(); i++) {
-			if (i == b) continue;
-			a.push_back(temp[i]);
-		}
-	}
-public:
 	void Uniq(int a, int b, flo bond)
 	{
 		b = b*27 + 13;
 		vector<VecPoints> tempVP, outVP;
 		tempVP = vp;
-		for (int i = 0; i < tempVP.size(); i++) {
+		for (int i = 0; i < (int)tempVP.size(); i++) {
 			tempVP[i].points.clear();
 		}
 		outVP = tempVP;
@@ -294,13 +286,13 @@ public:
 		int Count = 1;
 		
 		while (Count != 0) {
-			for (int i = 0; i < tempVP.size(); i++) {
+			for (int i = 0; i < (int)tempVP.size(); i++) {
 				if (tempVP[i].name[0] == '\0') break;
-				for (int j = 0; j < tempVP[i].points.size(); j++) {
+				for (int j = 0; j < (int)tempVP[i].points.size(); j++) {
 
-					for (int i1 = 0; i1 < vp.size(); i1++) {
+					for (int i1 = 0; i1 < (int)vp.size(); i1++) {
 						if (vp[i1].name[0] == '\0') break;
-						for (int j1 = 0; j1 < vp[i1].points.size(); j1++) {
+						for (int j1 = 0; j1 < (int)vp[i1].points.size(); j1++) {
 							if ((vp[i1].points[j1] - tempVP[i].points[j]).r() > (float)bond) continue;
 							tempVP[i1].points.push_back(vp[i1].points[j1]);
 							ClearPoint(vp[i1].points, j1);
@@ -316,5 +308,16 @@ public:
 			}
 		}
 		outVP.swap(vp);
+	}
+private:
+	void ClearPoint(vector<Point> & a, int b)
+	{
+		NCalls++;
+		vector<Point> temp;
+		a.swap(temp);
+		for (int i = 0; i < (int)temp.size(); i++) {
+			if (i == b) continue;
+			a.push_back(temp[i]);
+		}
 	}
 };
